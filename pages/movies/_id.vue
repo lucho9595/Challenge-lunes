@@ -1,6 +1,6 @@
 <template>
     <div class="all">
-        <router-link to="/movies" class="back-button">
+        <router-link to="/movie" class="back-button">
             <i class="fas fa-arrow-left"></i> Volver a películas
         </router-link>
         <div v-if="movie" class="container">
