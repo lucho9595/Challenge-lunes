@@ -4,15 +4,15 @@
             <h1>Login</h1>
             <form @submit.prevent="login">
                 <div class="form-group">
-                    <label :class="{ 'active': email !== '' }">
-                        <span>Email:</span>
-                        <input type="text" v-model="email" required>
+                    <input type="text" v-model="email" required>
+                    <label for="emailInput" :class="{ 'active': email || emailFocused }">
+                        Email:
                     </label>
                 </div>
                 <div class="form-group">
-                    <label :class="{ 'active': password !== '' }">
-                        <span>Password:</span>
-                        <input type="password" v-model="password" required>
+                    <input type="password" v-model="password" required>
+                    <label for="passwordInput" :class="{ 'active': password || passwordFocused }">
+                        Password:
                     </label>
                 </div>
                 <button type="submit" class="btn btn-danger">Submit</button>
@@ -23,10 +23,13 @@
 
 <script>
 export default {
+    name: "login",
     data() {
         return {
             email: '',
-            password: ''
+            password: '',
+            emailFocused: false,
+            passwordFocused: false
         };
     },
     methods: {
@@ -39,12 +42,21 @@ export default {
                 // Mostrar mensaje de error si el inicio de sesión falló
                 alert('Inicio de sesión fallido. Por favor, verifica tus credenciales.');
             }
-        }
+        },
     }
 };
 </script>
 
+
 <style>
+h1 {
+    margin-bottom: 35px;
+}
+
+form {
+    margin: 20px;
+}
+
 .login-container {
     background-color: #000;
     height: 100vh;
@@ -62,32 +74,38 @@ export default {
 }
 
 .form-group {
-    margin-bottom: 15px;
-}
-
-label {
     position: relative;
-    display: block;
-    color: white;
-}
-
-label span {
-    position: absolute;
-    left: 10px;
-    top: 22px;
-    font-size: 14px;
-    transition: top 0.3s, font-size 0.3s;
-}
-
-label.active span {
-    top: 6px;
-    font-size: 12px;
 }
 
 input[type="text"],
 input[type="password"] {
     width: 100%;
-    padding: 30px 10px 10px;
+    padding: 10px 9px 10px;
+    background: none;
+    border: 2px solid white;
+    outline: none;
+    border-radius: 6px;
+    font-size: 18px;
+    color: white;
+    margin-bottom: 25px;
+}
+
+label {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    font-size: 19px;
+    transform: translateY(-100%);
+    pointer-events: none;
+    transition: 0.3s;
+}
+
+input:focus+label {
+    top: 0px;
+    left: 15px;
+    font-size: 16px;
+    padding: 0 2px;
+    background: rgba(71, 71, 71, 0.21176);
 }
 
 .btn-danger {

@@ -1,20 +1,22 @@
 <template>
-    <div class="movie-container">
-        <h1>Películas</h1>
-        <div class="movie-grid">
-            <div v-for="movie in displayedMovies" :key="movie.imdbID" class="movie-card" @click="goToDetail(movie)">
-                <img :src="movie.Poster" alt="Movie Poster" class="movie-poster">
-                <h2>{{ movie.Title }}</h2>
+    <div class="container-fluid">
+        <div class="movie-container">
+            <h1>Películas</h1>
+            <div class="row">
+                <div v-for="movie in movies" :key="movie.imdbID" class="col-12 col-md-6 col-lg-4 movie-card">
+                    <img :src="movie.Poster" alt="Movie Poster" class="movie-poster" @click="goToDetail(movie)">
+                    <h2>{{ movie.Title }}</h2>
+                </div>
             </div>
-        </div>
-        <div class="pagination">
-            <button @click="previousPage" :disabled="currentPage === 1" class="btn btn-primary">
-                Anterior
-            </button>
-            <span class="current-page">{{ currentPage }}</span>
-            <button @click="nextPage" :disabled="currentPage === totalPages" class="btn btn-primary">
-                Siguiente
-            </button>
+            <div class="pagination">
+                <button @click="previousPage" :disabled="currentPage === 1" class="btn btn-primary">
+                    Anterior
+                </button>
+                <span class="current-page">{{ currentPage }}</span>
+                <button @click="nextPage" class="btn btn-primary">
+                    Siguiente
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -23,46 +25,32 @@
 import axios from 'axios';
 
 export default {
+    name: "movie",
     data() {
         return {
-            movies: [],
-            currentPage: 1,
-            moviesPerPage: 10
+            movies: [], // Lista de películas
+            currentPage: 1, // Página actual
+            totalResults: 0, // Total de resultados
+            apiKey: '7e46d54c', // Reemplaza "tu-api-key" con tu propia clave de API
         };
     },
     mounted() {
         this.fetchMovies();
     },
-    computed: {
-        displayedMovies() {
-            const startIndex = (this.currentPage - 1) * this.moviesPerPage;
-            const endIndex = startIndex + this.moviesPerPage;
-            return this.movies.slice(startIndex, endIndex);
-        },
-        totalPages() {
-            return Math.ceil(this.movies.length / this.moviesPerPage);
-        }
-    },
     methods: {
-        async fetchMovies() {
-            try {
-                const apiKey = '7e46d54c';
-                const url = `https://www.omdbapi.com/?apikey=${apiKey}&s=movie&type=movie&page=${this.currentPage}`;
-                const response = await axios.get(url);
-                if (response.data.Response === 'True') {
-                    this.movies = response.data.Search;
-                } else {
-                    console.error('Error al obtener la lista de películas:', response.data.Error);
-                }
-            } catch (error) {
-                console.error('Error al realizar la solicitud a la API de OMDB:', error);
-            }
-        },
-        goToDetail(movie) {
-            this.$router.push(`/movies/${movie.imdbID}`);
-        },
-        nextPage() {
-            if (this.currentPage < this.totalPages) {
+
+        fetchMovies() {
+            const url = `https://www.omdbapi.com/?apikey=${this.apiKey}&s=movie&type=movie&page=${this.currentPage}`;
+            axios.get(url)
+                .then(response => {
+                    this.movies = response.data.Search || [];
+                    this.totalResults = parseInt(response.data.totalResults);
+                })
+                .catch(error => {
+                    console.error('Error al obtener las películas:', error);
+                });
+        }, nextPage() {
+            if (this.currentPage < Math.ceil(this.totalResults / 10)) {
                 this.currentPage++;
                 this.fetchMovies();
             }
@@ -72,8 +60,11 @@ export default {
                 this.currentPage--;
                 this.fetchMovies();
             }
+        },
+        goToDetail(movie) {
+            this.$router.push(`/movies/${movie.imdbID}`);
         }
-    }
+    },
 };
 </script>
 <style>
