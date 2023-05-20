@@ -74,22 +74,19 @@ export default {
 
 <style scoped>
 .all{
+    display: flex;
     background-color: rgba(0, 0, 0, 0.527);
     height: 100vh;
-    width: 100vh;
-}
-.back-button {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    color: white;
-    font-size: 1.5rem;
-    text-decoration: none;
-    transition: opacity 0.3s ease;
+    justify-content: center;
+    align-items: center;
 }
 
-.back-button:hover {
-    opacity: 0.7;
+.container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #23242440;
+    border-radius: 15px;
 }
 
 .movie-details {
