@@ -1,16 +1,20 @@
 <template>
     <div class="all">
-        <router-link to="/movie" class="back-button">
-            <i class="fas fa-arrow-left"></i> Volver a películas
-        </router-link>
-        <div v-if="movie" class="container">
-            <div class="movie-details">
-                <h1 class="mb-4">{{ movie.Title }}</h1>
-                <div class="row">
-                    <div class="col-md-4">
-                        <img :src="movie.Poster" alt="Movie Poster" class="img-fluid mb-4">
-                    </div>
-                    <div class="col-md-8">
+        <div class="container">
+            <div class="row mt-3">
+                <div class="col-12">
+                    <router-link to="/movie" class="btn btn-primary">
+                        <i class="fas fa-arrow-left"></i> Volver a películas
+                    </router-link>
+                </div>
+            </div>
+            <div class="row mt-3" v-if="movie">
+                <div class="col-lg-4">
+                    <img :src="movie.Poster" alt="Movie Poster" class="img-fluid mb-4">
+                </div>
+                <div class="col-lg-8">
+                    <div class="movie-details">
+                        <h1 class="mb-4">{{ movie.Title }}</h1>
                         <div class="details">
                             <p><strong>Año:</strong> {{ movie.Year }}</p>
                             <p><strong>Género:</strong> {{ movie.Genre }}</p>
@@ -30,8 +34,8 @@
                     </div>
                 </div>
             </div>
+            <div v-else class="loading text-center mt-3">Cargando detalles de la película...</div>
         </div>
-        <div v-else class="loading">Cargando detalles de la película...</div>
     </div>
 </template>
 
@@ -68,7 +72,12 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.all{
+    background-color: rgba(0, 0, 0, 0.527);
+    height: 100vh;
+    width: 100vh;
+}
 .back-button {
     position: absolute;
     top: 20px;
@@ -81,15 +90,6 @@ export default {
 
 .back-button:hover {
     opacity: 0.7;
-}
-
-.all {
-    background-color: rgba(0, 0, 0, 0.849);
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .movie-details {

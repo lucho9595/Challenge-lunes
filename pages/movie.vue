@@ -1,11 +1,13 @@
 <template>
     <div class="container-fluid">
         <div class="movie-container">
-            <h1>Películas</h1>
+            <h1 class="p">Películas</h1>
             <div class="search-container">
                 <input type="text" v-model="searchQuery" @input="searchMovies" placeholder="Buscar película"
                     class="search-input" />
-                <button @click="clearSearch">Limpiar</button>
+                <button @click="clearSearch" class="clear-button">
+                    Limpiar
+                </button>
             </div>
             <div class="row">
                 <div v-for="movie in movies" :key="movie.imdbID" class="col-12 col-md-6 col-lg-4 movie-card">
@@ -67,7 +69,6 @@ export default {
             if (this.currentPage > 1) {
                 this.currentPage--;
                 this.fetchMovies();
-                this.searchMovies(); // Agregamos la llamada a searchMovies para mantener la búsqueda activa en la nueva página
             }
         },
         goToDetail(movie) {
@@ -113,14 +114,14 @@ export default {
 </script>
 
 <style>
-h1 {
+.p {
     color: red;
     text-align: center;
     margin-bottom: 20px;
 
 }
 
-h1:hover {
+.p:hover {
     text-shadow: -3px 2px 50px white;
 }
 
@@ -129,15 +130,33 @@ h1:hover {
 }
 
 .search-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .search-input {
-    width: 200px;
-    margin-right: 10px;
+  width: 200px;
+  margin-right: 10px;
+  padding: 5px;
+  font-size: 16px;
+}
+
+.clear-button {
+  border: none;
+  background: none;
+  color: #999;
+  font-size: 18px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.clear-button:hover {
+  color: #e50914;
+}
+
+.clear-button i {
+  margin-right: 5px;
 }
 
 .movie-container {
