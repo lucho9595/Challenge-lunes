@@ -2,6 +2,11 @@
     <div class="container-fluid">
         <div class="movie-container">
             <h1>Películas</h1>
+            <div class="search-container">
+                <input type="text" v-model="searchQuery" @input="searchMovies" placeholder="Buscar película"
+                    class="search-input" />
+                <button @click="clearSearch">Limpiar</button>
+            </div>
             <div class="row">
                 <div v-for="movie in movies" :key="movie.imdbID" class="col-12 col-md-6 col-lg-4 movie-card">
                     <img :src="movie.Poster" alt="Movie Poster" class="movie-poster" @click="goToDetail(movie)">
@@ -22,26 +27,27 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
-    name: "movie",
+    name: 'movie',
     data() {
         return {
             movies: [], // Lista de películas
             currentPage: 1, // Página actual
             totalResults: 0, // Total de resultados
             apiKey: '7e46d54c', // Reemplaza "tu-api-key" con tu propia clave de API
+            searchQuery: '', // Consulta de búsqueda
         };
     },
     mounted() {
         this.fetchMovies();
     },
     methods: {
-
         fetchMovies() {
             const url = `https://www.omdbapi.com/?apikey=${this.apiKey}&s=movie&type=movie&page=${this.currentPage}`;
-            axios.get(url)
+            axios
+                .get(url)
                 .then(response => {
                     this.movies = response.data.Search || [];
                     this.totalResults = parseInt(response.data.totalResults);
@@ -49,27 +55,92 @@ export default {
                 .catch(error => {
                     console.error('Error al obtener las películas:', error);
                 });
-        }, nextPage() {
+        },
+        nextPage() {
             if (this.currentPage < Math.ceil(this.totalResults / 10)) {
                 this.currentPage++;
                 this.fetchMovies();
+                this.searchMovies(); // Agregamos la llamada a searchMovies para mantener la búsqueda activa en la nueva página
             }
         },
         previousPage() {
             if (this.currentPage > 1) {
                 this.currentPage--;
                 this.fetchMovies();
+                this.searchMovies(); // Agregamos la llamada a searchMovies para mantener la búsqueda activa en la nueva página
             }
         },
         goToDetail(movie) {
             this.$router.push(`/movies/${movie.imdbID}`);
-        }
+        },
+        searchMovies() {
+            if (this.searchQuery === '') {
+                // Si la consulta de búsqueda está vacía, muestra todas las películas
+                this.fetchMovies();
+            } else {
+                // Realiza una búsqueda según la consulta
+                const searchUrl = `https://www.omdbapi.com/?apikey=${this.apiKey}&s=${this.searchQuery}&type=movie`;
+                axios
+                    .get(searchUrl)
+                    .then(response => {
+                        this.movies = response.data.Search || [];
+                        this.totalResults = parseInt(response.data.totalResults);
+                    })
+                    .catch(error => {
+                        console.error('Error al realizar la búsqueda:', error);
+                    });
+            }
+        },
+        clearSearch() {
+            this.searchQuery = '';
+            this.fetchMovies();
+        },
+    },
+    computed: {
+        // Utilizamos filteredMovies en lugar de movies en el bucle v-for
+        filteredMovies() {
+            // Filtra las películas según la consulta de búsqueda
+            if (this.searchQuery === '') {
+                return this.movies;
+            } else {
+                return this.movies.filter((movie) =>
+                    movie.Title.toLowerCase().includes(this.searchQuery.toLowerCase())
+                );
+            }
+        },
     },
 };
 </script>
+
 <style>
+h1 {
+    color: red;
+    text-align: center;
+    margin-bottom: 20px;
+
+}
+
+h1:hover {
+    text-shadow: -3px 2px 50px white;
+}
+
+.container-fluid {
+    background-color: black;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    width: 200px;
+    margin-right: 10px;
+}
+
 .movie-container {
-    background-color: #000;
     padding: 20px;
 }
 

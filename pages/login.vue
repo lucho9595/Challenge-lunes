@@ -1,52 +1,65 @@
 <template>
     <div class="login-container">
-        <div class="login-form">
-            <h1>Login</h1>
-            <form @submit.prevent="login">
-                <div class="form-group">
-                    <input type="text" v-model="email" required>
-                    <label for="emailInput" :class="{ 'active': email || emailFocused }">
-                        Email:
-                    </label>
-                </div>
-                <div class="form-group">
-                    <input type="password" v-model="password" required>
-                    <label for="passwordInput" :class="{ 'active': password || passwordFocused }">
-                        Password:
-                    </label>
-                </div>
-                <button type="submit" class="btn btn-danger">Submit</button>
-            </form>
-        </div>
+      <div class="login-form">
+        <h1>Login</h1>
+        <form @submit.prevent="login">
+          <div class="form-group">
+            <input
+              type="text"
+              v-model="email"
+              required
+              @focus="emailFocused = true"
+              @blur="emailFocused = false"
+            >
+            <label for="emailInput" :class="{ 'active': email || emailFocused }">
+              Email:
+            </label>
+          </div>
+          <div class="form-group">
+            <input
+              type="password"
+              v-model="password"
+              required
+              @focus="passwordFocused = true"
+              @blur="passwordFocused = false"
+            >
+            <label for="passwordInput" :class="{ 'active': password || passwordFocused }">
+              Password:
+            </label>
+          </div>
+          <button type="submit" class="btn btn-danger">Submit</button>
+        </form>
+      </div>
     </div>
-</template>
-
-<script>
-export default {
+  </template>
+  
+  <script>
+  export default {
     name: "login",
     data() {
-        return {
-            email: '',
-            password: '',
-            emailFocused: false,
-            passwordFocused: false
-        };
+      return {
+        email: "",
+        password: "",
+        emailFocused: false,
+        passwordFocused: false,
+      };
     },
     methods: {
-        login() {
-            // Verificar las credenciales ingresadas
-            if (this.email === 'admin@admin.com' && this.password === 'admin123') {
-                // Inicio de sesión exitoso, redirige al componente de películas
-                this.$router.push('/movie');
-            } else {
-                // Mostrar mensaje de error si el inicio de sesión falló
-                alert('Inicio de sesión fallido. Por favor, verifica tus credenciales.');
-            }
-        },
-    }
-};
-</script>
-
+      login() {
+        // Verificar las credenciales ingresadas
+        if (this.email === "admin@admin.com" && this.password === "admin123") {
+          // Inicio de sesión exitoso, redirige al componente de películas
+          this.$router.push("/movie");
+        } else {
+          // Mostrar mensaje de error si el inicio de sesión falló
+          alert(
+            "Inicio de sesión fallido. Por favor, verifica tus credenciales."
+          );
+        }
+      },
+    },
+  };
+  </script>
 
 <style>
 h1 {
