@@ -4,13 +4,13 @@
           <h1>Login</h1>
           <form @submit.prevent="login">
               <div class="form-group">
-                  <input type="text" v-model="email" @focus="emailFocused = true" @blur="emailFocused = false" required>
+                  <input type="text" v-model="email" @focus="emailFocused = true" @blur="emailFocused = false" required class="text">
                   <label for="emailInput" :class="{ 'active': email || emailFocused }">
                       Email:
                   </label>
               </div>
               <div class="form-group">
-                  <input type="password" v-model="password" @focus="passwordFocused = true" @blur="passwordFocused = false" required>
+                  <input type="password" v-model="password" @focus="passwordFocused = true" @blur="passwordFocused = false" required class="text">
                   <label for="passwordInput" :class="{ 'active': password || passwordFocused }">
                       Password:
                   </label>
@@ -76,8 +76,8 @@ form {
   position: relative;
 }
 
-input[type="text"],
-input[type="password"] {
+
+.text{
   width: 100%;
   padding: 10px 9px 10px;
   background: none;

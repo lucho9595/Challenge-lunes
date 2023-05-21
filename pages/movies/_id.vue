@@ -73,20 +73,26 @@ export default {
 </script>
 
 <style scoped>
-.all{
+.all {
     display: flex;
-    background-color: rgba(0, 0, 0, 0.527);
-    height: 100vh;
+    background-color: rgb(255 148 0 / 53%);
+    min-height: 100vh;
     justify-content: center;
     align-items: center;
 }
 
-.container{
+.container {
     display: flex;
-    flex-direction: column;
     justify-content: center;
-    background-color: #23242440;
+    background-color: rgba(35, 36, 36, 0.25098);
     border-radius: 15px;
+    padding: 20px;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
 }
 
 .movie-details {
@@ -100,12 +106,15 @@ export default {
 }
 
 .movie-details img {
-    width: 300px;
+    width: 100%;
+    max-width: 300px;
+    height: auto;
 }
 
 .details {
     text-align: left;
     padding-left: 30px;
+    margin-top: 20px;
 }
 
 .loading {

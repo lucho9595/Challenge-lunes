@@ -5,22 +5,29 @@
             <div class="search-container">
                 <input type="text" v-model="searchQuery" @input="searchMovies" placeholder="Buscar película"
                     class="search-input" />
-                <button @click="clearSearch" class="clear-button">
-                    Limpiar
-                </button>
+                <button @click="clearSearch" class="clear-button">Limpiar</button>
             </div>
             <div class="row">
-                <div v-for="movie in movies" :key="movie.imdbID" class="col-12 col-md-6 col-lg-4 movie-card">
-                    <img :src="movie.Poster" alt="Movie Poster" class="movie-poster" @click="goToDetail(movie)">
-                    <h2>{{ movie.Title }}</h2>
-                </div>
+                    <div v-for="movie in filteredMovies" :key="movie.imdbID" class="col-12 col-md-6 col-lg-4 movie-card">
+                        <div class="card-image" @click="goToDetail(movie)">
+                            <img v-if="movie.Poster !== 'N/A'" :src="movie.Poster" alt="Movie Poster"
+                                class="card-img-top" />
+                            <div v-else class="loading-img"></div>
+                            <div class="card-overlay">
+                                <span class="card-overlay-text">Click here</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h2 class="card-title">{{ movie.Title }}</h2>
+                        </div>
+                    </div>
             </div>
             <div class="pagination">
                 <button @click="previousPage" :disabled="currentPage === 1" class="btn btn-primary">
                     Anterior
                 </button>
                 <span class="current-page">{{ currentPage }}</span>
-                <button @click="nextPage" class="btn btn-primary">
+                <button @click="nextPage" :disabled="currentPage === totalPages" class="btn btn-primary">
                     Siguiente
                 </button>
             </div>
@@ -28,8 +35,9 @@
     </div>
 </template>
 
+
 <script>
-import axios from "axios";
+import axios from 'axios';
 
 export default {
     name: 'movie',
@@ -38,8 +46,10 @@ export default {
             movies: [], // Lista de películas
             currentPage: 1, // Página actual
             totalResults: 0, // Total de resultados
+            totalPages: 0, // Total de páginas
             apiKey: '7e46d54c', // Reemplaza "tu-api-key" con tu propia clave de API
             searchQuery: '', // Consulta de búsqueda
+            loading: false, // Estado de carga
         };
     },
     mounted() {
@@ -48,18 +58,23 @@ export default {
     methods: {
         fetchMovies() {
             const url = `https://www.omdbapi.com/?apikey=${this.apiKey}&s=movie&type=movie&page=${this.currentPage}`;
+            this.loading = true; // Mostrar estado de carga
             axios
                 .get(url)
                 .then(response => {
                     this.movies = response.data.Search || [];
                     this.totalResults = parseInt(response.data.totalResults);
+                    this.totalPages = Math.ceil(this.totalResults / 10);
                 })
                 .catch(error => {
                     console.error('Error al obtener las películas:', error);
+                })
+                .finally(() => {
+                    this.loading = false; // Ocultar estado de carga
                 });
         },
         nextPage() {
-            if (this.currentPage < Math.ceil(this.totalResults / 10)) {
+            if (this.currentPage < this.totalPages) {
                 this.currentPage++;
                 this.fetchMovies();
                 this.searchMovies(); // Agregamos la llamada a searchMovies para mantener la búsqueda activa en la nueva página
@@ -86,6 +101,7 @@ export default {
                     .then(response => {
                         this.movies = response.data.Search || [];
                         this.totalResults = parseInt(response.data.totalResults);
+                        this.totalPages = Math.ceil(this.totalResults / 10);
                     })
                     .catch(error => {
                         console.error('Error al realizar la búsqueda:', error);
@@ -104,7 +120,7 @@ export default {
             if (this.searchQuery === '') {
                 return this.movies;
             } else {
-                return this.movies.filter((movie) =>
+                return this.movies.filter(movie =>
                     movie.Title.toLowerCase().includes(this.searchQuery.toLowerCase())
                 );
             }
@@ -112,112 +128,176 @@ export default {
     },
 };
 </script>
-
-<style>
+  
+<style scoped>
 .p {
-    color: red;
-    text-align: center;
-    margin-bottom: 20px;
-
+  color: red;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .p:hover {
-    text-shadow: -3px 2px 50px white;
+  text-shadow: -3px 2px 50px white;
 }
 
 .container-fluid {
-    background-color: black;
+  background-color: black;
 }
 
 .search-container {
   display: flex;
-  align-items: center;
+  flex-direction: row;
   margin-bottom: 20px;
+  justify-content: center;
+  align-items: center;
 }
 
 .search-input {
   width: 200px;
-  margin-right: 10px;
-  padding: 5px;
-  font-size: 16px;
+  /* Ajusta el ancho según tus necesidades */
+  padding: 8px;
+  background: #222;
+  /* Cambia el color de fondo del searchBar */
+  outline: none;
+  border-radius: 6px;
+  font-size: 14px;
+  /* Ajusta el tamaño del texto del searchBar */
+  color: white;
+  /* Cambia el color del texto del searchBar */
+  border: none;
 }
 
 .clear-button {
-  border: none;
-  background: none;
-  color: #999;
-  font-size: 18px;
+  border: 0px solid white;
+  background: red;
+  border-radius: 6px;
+  color: #fffdfd;
+  font-size: 14px;
+  /* Ajusta el tamaño del texto del botón Limpiar */
   cursor: pointer;
-  transition: color 0.3s;
+  transition: 0.3s;
+  margin-left: 10px;
+  padding: 6px 10px;
 }
 
 .clear-button:hover {
-  color: #e50914;
-}
-
-.clear-button i {
-  margin-right: 5px;
+  background-color: rgb(94, 8, 8);
 }
 
 .movie-container {
-    padding: 20px;
-}
-
-.movie-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: 20px;
+  padding: 20px;
 }
 
 .movie-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
+  display: flex;
+  margin-bottom: 20px;
+  flex-direction: column;
+  align-items: center;
 }
 
-.movie-poster {
-    width: 200px;
-    cursor: pointer;
-    transition: transform 0.3s ease;
+.card-wrapper {
+  position: relative;
+  width: 200px;
+  height: 300px;
+  /* Ajusta el tamaño de las imágenes */
 }
 
-.movie-poster:hover {
-    transform: scale(1.1);
+.card-img-top {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  opacity: 0.8;
 }
 
-.movie-card h2 {
-    margin-top: 10px;
-    color: #fff;
+.card-img-top:hover {
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+.card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card-wrapper:hover .card-overlay {
+  opacity: 1;
+}
+
+.card-overlay-text {
+  color: white;
+  font-weight: bold;
+}
+
+.card-body {
+  padding: 10px;
+}
+
+.card-title {
+  margin-top: 10px;
+  color: white;
+  /* Cambia el color del texto del título de la película */
 }
 
 .pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
 
 .pagination button {
-    margin: 0 5px;
-    padding: 5px 10px;
-    cursor: pointer;
+  margin: 0 5px;
+  padding: 5px 10px;
+  cursor: pointer;
 }
 
 .pagination button[disabled] {
-    opacity: 0.5;
-    cursor: not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .btn-primary {
-    background-color: red;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  background-color: red;
+  /* Cambia el color de fondo de los botones Anterior y Siguiente */
+  color: white;
+  /* Cambia el color del texto de los botones Anterior y Siguiente */
 }
 
-.btn-primary:hover {
-    background-color: #c80000;
+.current-page {
+  margin: 0 10px;
+  font-weight: bold;
+  color: white;
+  /* Cambia el color del número de página actual */
+}
+
+.loading-img {
+  width: 100px;
+  height: 150px;
+  background-color: #222;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.5;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.5;
+  }
 }
 </style>
